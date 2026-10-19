@@ -1,0 +1,31 @@
+{
+  "question": "Can a federated ridge regression, which aggregates exact sufficient statistics and exposes readable coefficients, match or beat a FedAvg-trained MLP for next-hour household load forecasting?",
+  "method": "Hourly mean Global_active_power with lag and calendar features; chronological 80/20 split; training part divided into contiguous time-block clients; both models trained federatedly and evaluated on the same held-out test period.",
+  "dataset": {
+    "name": "UCI Individual Household Electric Power Consumption (resampled to hourly)",
+    "source_url": "https://archive.ics.uci.edu/ml/machine-learning-databases/00235/household_power_consumption.zip",
+    "n_rows": 33447,
+    "n_train": 26757,
+    "n_test": 6690,
+    "same_as_paper": false,
+    "baseline_is_papers_method": false
+  },
+  "metric_name": "Test MAE (kW)",
+  "higher_is_better": false,
+  "baseline": "FedAvg-trained scikit-learn MLPRegressor (64-32 ReLU, Adam, local partial_fit, 20 rounds of 1 local epoch, sample-weighted averaging of weights across 5 clients).",
+  "improved": "Federated ridge regression: each client sends only X'X and X'y once; the server sums them and solves; lambda chosen by leave-one-block-out CV on the training blocks; coefficients are readable in kW units.",
+  "metrics": {
+    "baseline_score": 0.4386392182774313,
+    "improved_score": 0.4485351608359518,
+    "improvement": -0.009895942558520499,
+    "baseline_score_std": 0.00786463353108646,
+    "improved_score_std": 0.0,
+    "baseline_rmse": 0.5915035760241146,
+    "improved_rmse": 0.6020276897953478,
+    "baseline_r2": 0.38123543734736226,
+    "improved_r2": 0.3590596376824234,
+    "ridge_lambda": 0.01,
+    "n_seeds": 3
+  },
+  "notes": "Single chronological split of one household series; the clients are time blocks, so they are non-IID by construction. Hourly aggregation (about two million minute rows reduced to tens of thousands of hours) is well under the row cap, so no subsampling was needed. Only the MLP is randomized; ridge is deterministic, so its seed spread is zero. The MLP is untuned and the ridge is linear, so the comparison is not a fully tuned benchmark. The motivating paper's model and results were not available, so no paper numbers are reproduced."
+}
