@@ -11,6 +11,30 @@ Changes in this revision: the improved model now uses richer features (rolling 2
 
 Run with `python analysis.py`. It writes `results.json` and `figures/mae_comparison.png`.
 
+## Results (latest run)
+
+On the UCI household power dataset (hourly resampled, chronological test split), a federated ridge regression reached a test MAE of 0.419 kW versus 0.439 kW for a standard FedAvg-trained MLP forecaster, a small gain of about 0.019 kW.
+
+| Metric | Value |
+|---|---|
+| baseline_score | 0.4386 |
+| improved_score | 0.4194 |
+| improvement | 0.01928 |
+| baseline_score_std | 0.007865 |
+| improved_score_std | 0 |
+| baseline_rmse | 0.5915 |
+| improved_rmse | 0.5732 |
+| baseline_r2 | 0.3812 |
+| improved_r2 | 0.4189 |
+| ridge_lambda | 0.01 |
+| n_seeds | 3 |
+| n_baseline_features | 29 |
+| n_improved_features | 112 |
+
+Run on 2026-10-19. Full output: [results.json](results.json) · [run.log](run.log)
+
+Notes: Single chronological split of one household series; the clients are time blocks, so they are non-IID by construction. Both models use the same rows and the same test period; the baseline inputs are unchanged. The improvement comes only from the richer linear feature map for ridge, with lambda chosen by leave-one-block-out CV on training data. Only the MLP is randomized; ridge is deterministic, so its seed spread is zero. The MLP is untuned, so the comparison is not a fully tuned benchmark. The motivating paper's model and results were not available, so no paper numbers are reproduced.
+
 ## Reference
 
 This project is motivated by the following paper:
